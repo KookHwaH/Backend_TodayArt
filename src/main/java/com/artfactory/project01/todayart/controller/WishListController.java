@@ -65,11 +65,15 @@ public class WishListController {
     @return null
     */
     @PreAuthorize("hasAnyRole('CUSTOMER','ARTIST', 'ADMIN')")
-    @RequestMapping(path="/{wishListId}",
+    @RequestMapping(path="/{wishlistId}",
             method = RequestMethod.DELETE,
             produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-    public void deleteWishList(@PathVariable("wishListId")Integer wishListId){
-        wishListService.deleteWishList(wishListId);
+    public WishList deleteWishList(@PathVariable("wishlistId")Integer wishlistId){
+        wishListService.deleteWishList(wishlistId);
+        WishList wishList = new WishList();
+        wishList.setWishlistId(wishlistId);
+        return wishList;
+
     }
 
 

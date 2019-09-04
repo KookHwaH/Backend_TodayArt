@@ -1,10 +1,15 @@
 package com.artfactory.project01.todayart.controller;
 
+import com.artfactory.project01.todayart.entity.EmailVerify;
 import com.artfactory.project01.todayart.entity.Member;
+import com.artfactory.project01.todayart.model.EmailVerifyModel;
 import com.artfactory.project01.todayart.model.MemberRegister;
 import com.artfactory.project01.todayart.model.MemberUpdate;
 import com.artfactory.project01.todayart.model.HttpStatusMessage;
+import com.artfactory.project01.todayart.service.EmailService;
+import com.artfactory.project01.todayart.service.EmailVerifyService;
 import com.artfactory.project01.todayart.service.MemberService;
+import com.artfactory.project01.todayart.util.HashingUtil;
 import com.artfactory.project01.todayart.util.MemberDetailServiceImpl;
 import com.artfactory.project01.todayart.util.PrincipalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.InvalidParameterException;
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @RestController
@@ -28,6 +34,12 @@ public class MemberController {
 
     @Autowired
     private MemberDetailServiceImpl memberDetailsService;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private EmailVerifyService emailVerifyService;
 
     /*
       작성자:  희창
@@ -51,7 +63,7 @@ public class MemberController {
       @param Member
       @return Member
     */
-    @PreAuthorize("hasRole('GUEST')")
+//    @PreAuthorize("hasRole('GUEST')")
     @PostMapping(path = "/signIn", produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public UserDetails signIn(@RequestBody Map<String, String> signMember) {
         String email = signMember.get("email");
@@ -220,6 +232,70 @@ public class MemberController {
         memberService.updateMember(member);
         httpStatusMessage.setStatusCode(HttpStatus.OK);
         httpStatusMessage.setStatusMessage("변경이 완료되었습니다.");
+
+        return httpStatusMessage;
+    }
+
+    /*
+     * 작성자 : 상현
+     * 용도 : 비밀번호 재설정 / 회원 승인 메일 발송 기능
+     */
+    @PostMapping(path="/sendEmail", produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public HttpStatusMessage sendEmail(@RequestBody EmailVerifyModel emailVerifyModel) {
+        HttpStatusMessage httpStatusMessage = new HttpStatusMessage();
+
+        if(emailVerifyModel == null) {
+            httpStatusMessage.setStatusCode(HttpStatus.BAD_REQUEST);
+            httpStatusMessage.setStatusMessage("오류가 발생 했습니다.");
+        } else {
+            Integer memberId = memberService.findByEmail(emailVerifyModel.getEmail()).getMemberId();
+            LocalDateTime localDateTime = LocalDateTime.now();
+            HashingUtil hashingUtil = new HashingUtil();
+
+            EmailVerify emailVerify = new EmailVerify();
+            emailVerify.setMemberId(memberId);
+            emailVerify.setType(emailVerifyModel.getType());
+            emailVerify.setExpireDated(localDateTime.plusHours(1));
+            emailVerify.setVerifyText(hashingUtil.sha256Encoding(emailVerifyModel.getEmail() + localDateTime));
+            emailVerifyService.createEmailVerify(emailVerify);
+
+            String token = emailVerifyService.findByMemberId(memberId).getVerifyText();
+
+            String subject = "[오늘의아트] 회원가입을 환영합니다.";
+            String text = token;
+            emailService.sendSimpleMessage(emailVerifyModel.getEmail(), subject, text);
+
+            httpStatusMessage.setStatusCode(HttpStatus.OK);
+            httpStatusMessage.setStatusMessage("발송 성공");
+        }
+
+        return httpStatusMessage;
+    };
+
+    /*
+     * 작성자 : 상현
+     * 기능 : 가입 승인 메일 토큰 확인
+     * 인자 : token
+     * 리턴 : HttpStatusMessage 객체
+     */
+    @GetMapping(path = "/checkRegisterToken", produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public HttpStatusMessage checkRegisterToken(@RequestParam String token) {
+        HttpStatusMessage httpStatusMessage = new HttpStatusMessage();
+
+        EmailVerify emailVerify = emailVerifyService.findByVerifyText(token);
+
+
+        if (emailVerify == null) {
+            httpStatusMessage.setStatusCode(HttpStatus.CONFLICT);
+            httpStatusMessage.setStatusMessage("오류가 발생 했습니다.");
+        } else {
+            Member member = memberService.retrieveMember(emailVerify.getMemberId());
+            member.setEmailChecked("Y");
+            memberService.updateMember(member);
+
+            httpStatusMessage.setStatusCode(HttpStatus.OK);
+            httpStatusMessage.setStatusMessage("승인 완료!");
+        }
 
         return httpStatusMessage;
     }

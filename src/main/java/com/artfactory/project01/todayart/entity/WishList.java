@@ -38,8 +38,7 @@ public class WishList {
     private Product product;
 
 
-    @Column(name = "thumbnail_id")
-    private Integer thumbnailId;
+
 
 
     @Column(name = "product_price")
@@ -48,7 +47,6 @@ public class WishList {
 
     @Column(name = "product_size")
     private String productSize;
-
 
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -63,6 +61,7 @@ public class WishList {
 
     @Column(name = "is_stock")
     private String isStock;
+
 
 
 }

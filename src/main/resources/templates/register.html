@@ -1,0 +1,17 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Mail Template</title>
+</head>
+<body>
+    <h2>가입을 환영합니다 :)</h2>
+    <p><span>오늘의아트에서 다양한 작가들의 작품을 감상하고 구매해보세요!</span></p>
+    <p>작품을 구매하기 위해서는 가입이 필요합니다. 아래 링크를 통해 가입절차를 완료 해 주세요!</p>
+    <a th:href="@{'http://localhost:3000/register-success/' + ${text}}">이메일 인증하기</a>
+</body>
+</html>

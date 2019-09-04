@@ -229,8 +229,11 @@ public class OrderService {
             int orderId = orderedDetail.getOrderId();
             Ordered ordered = orderedRepository.findByOrderId(orderId);
             if(memberId==ordered.getMemberId()){
-                if(orderedDetail.getStatus().equals("배송준비")){
+                if(orderedDetail.getStatus().equals("배송준비")||orderedDetail.getStatus().equals("결제완료")||orderedDetail.getStatus().equals("결제대기")){
                     orderedDetail.setStatus("주문취소");
+                    return orderedDetailRepository.save(orderedDetail);
+                }else if(orderedDetail.getStatus().equals("배송완료")){
+                    orderedDetail.setStatus("주문확정");
                     return orderedDetailRepository.save(orderedDetail);
                 }
             }
@@ -252,7 +255,7 @@ public class OrderService {
             return orderedDetailRepository.save(orderedDetail);
 
         }
-    return null;
+    return orderedDetailRepository.findByOrderDetailId(item.getOrderDetailId());
     }
 
     /**

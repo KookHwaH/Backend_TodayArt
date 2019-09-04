@@ -20,17 +20,12 @@ import java.util.Date;
 @Setter
 public class Article implements Serializable {
 
-
     @Id
     @Column(columnDefinition = "INT", name = "article_id", updatable = false, nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer articleId;
 
 
-//    @ManyToOne(fetch = FetchType.EAGER, targetEntity = BoardCategory.class)
-//    @JoinColumn(name = "board_id", nullable = false)
-//    @JsonIgnore
-//    private BoardCategory boardCategory;
 
     @Column(name = "board_id",nullable = false)
     private Integer boardId;
@@ -86,9 +81,6 @@ public class Article implements Serializable {
 
     @Transient
     private String boardName;
-
-//    @Transient
-//    private Integer boardId;
 
     @Transient
     private Article article;

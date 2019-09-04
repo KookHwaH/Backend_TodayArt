@@ -31,4 +31,4 @@ build/
 .vscode/
 
 ### File repository ban ###
-**/src/main/resources/files/**
+# **/src/main/resources/files/**

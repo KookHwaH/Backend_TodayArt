@@ -16,7 +16,7 @@ import java.util.Date;
 @Setter
 public class ShippingForm {
     private String consignee; // 수취인
-    private Integer postalCode; // 우편번호
+    private String postalCode; // 우편번호
     private String receiveAddr; // 수취인 주소
     private String consigneePhone; // 수취인 연락처
 

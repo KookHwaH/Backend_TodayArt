@@ -1,25 +1,43 @@
 package com.artfactory.project01.todayart.service;
 
-import com.artfactory.project01.todayart.model.Mail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.stereotype.Component;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 
 @Service
 public class EmailService {
 
-    public void sendSimpleMessage(final Mail mail) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setSubject(mail.getSubject());
-        message.setText(mail.getContent());
-        message.setTo(mail.getTo());
-        message.setFrom(mail.getFrom());
+    @Autowired
+    public JavaMailSender emailSender;
 
-        JavaMailSender emailSender = new JavaMailSenderImpl();
+    @Autowired
+    private TemplateEngine templateEngine;
+
+    public void sendSimpleMessage(String to, String subject, String text) {
+        MimeMessagePreparator message = mimeMessage -> {
+            String content = build(text);
+
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
+            messageHelper.setTo(to);
+            messageHelper.setSubject(subject);
+            messageHelper.setText(content, true);
+        };
+
         emailSender.send(message);
     }
 
+    private String build(String text) {
+        Context context = new Context();
+        context.setVariable("text", text);
+
+        return templateEngine.process("register", context);
+    }
 }

@@ -40,28 +40,24 @@ public class WishListService {
         int productId = wishList.getProduct().getProductId();
                    Product product = productRepository.findById(productId).get();
             Integer memberId = member.getMemberId();
-            if (wishListRepository.findByMemberIdAndProducIdtAndIsDelete(memberId, productId) != null) {
-                System.out.println("중복");
 
-
-            } else if (wishListRepository.findByMemberIdAndProducIdtAndIsDelete(memberId, productId) == null) {
 
             // 찜하기 클릭했을 때 프로덕트의 count 컬럼 1 증가
             ProductForm productForm = new ProductForm();
             productForm.setProduct(product);
             product.setCountWishlist(product.getCountWishlist() + 1);
             //
-            wishList.setMemberId(member.getMemberId());
+            wishList.setMemberId(memberId);
             wishList.setProductPrice(product.getProductPrice());
             wishList.setProductSize(product.getProductSize());
-            // wishList.setThumbnailId(product.getThumbnailId());
+
             wishList.setArtistName(product.getArtistName());
             wishList.setIsStock(product.getRemain()>0?"y":"n");
 
             productRepository.save(product);
-            wishList = wishListRepository.save(wishList);
+        wishList = wishListRepository.save(wishList);
 
-        }
+
         return wishList;
 
     }
@@ -100,10 +96,11 @@ public class WishListService {
      @return null
    */
     @Transactional
-    public void deleteWishList(Integer wishListId){
-        WishList wishList = wishListRepository.findById(wishListId).get();
+    public boolean deleteWishList(Integer wishlistId){
+        WishList wishList = wishListRepository.findById(wishlistId).get();
         wishList.setIsDelete("y");
         wishListRepository.save(wishList);
+        return true;
     }
 
 }
