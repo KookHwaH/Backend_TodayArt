@@ -2,12 +2,15 @@ package com.artfactory.project01.todayart.controller;
 
 import com.artfactory.project01.todayart.entity.Shipping;
 import com.artfactory.project01.todayart.model.ShippingForm;
+import com.artfactory.project01.todayart.model.ShippingModel;
 import com.artfactory.project01.todayart.service.ShippingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /*
  * 작성자 : 상현
@@ -35,10 +38,15 @@ public class ShippingController {
      * 기능 : 배송 정보 생성
      * 인자 : shipping (JSON Object)
      * 반환 : 생성 된 Shipping
+     *
+     * #2019/09/05
+     * 작성자 : 국화
+     * 주문 후 결제 완료시 해당 주문건에 대한 배송정보생성
+     *
      */
-    @PostMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Shipping createShipping(@RequestBody Shipping shipping) {
-        return shippingService.createShipping(shipping);
+    @PostMapping(produces =MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<Shipping> createShipping(@RequestBody ShippingModel data) {
+        return shippingService.createShipping(data);
     }
 
     /*

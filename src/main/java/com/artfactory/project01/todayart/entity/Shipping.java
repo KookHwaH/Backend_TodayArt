@@ -6,11 +6,9 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.lang.Nullable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
+import java.util.IdentityHashMap;
 
 /*
  * 작성자 : 상현
@@ -24,6 +22,7 @@ import java.util.Date;
 @Setter
 public class Shipping {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "shipping_id", insertable = false, nullable = false, updatable = false)
     private Integer shippingId; // 배송번호
 

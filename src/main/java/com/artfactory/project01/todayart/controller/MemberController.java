@@ -158,7 +158,13 @@ public class MemberController {
      */
     @GetMapping(path = "/me", produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public Member me(Principal principal) {
-        return (Member) memberDetailsService.loadUserByUsername(principal.getName());
+        Member member = (Member) memberDetailsService.loadUserByUsername(principal.getName());
+
+        if(member.getEmailChecked().equals("n")) {
+            return null;
+        }
+
+        return member;
     }
 
     /*

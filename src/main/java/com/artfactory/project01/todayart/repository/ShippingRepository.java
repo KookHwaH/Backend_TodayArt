@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ShippingRepository extends JpaRepository<Shipping, Integer> {
+    Shipping findByOrderedIdAndArtistId(int OrderId, int ArtistId);
 }

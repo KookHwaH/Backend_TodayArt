@@ -1,6 +1,7 @@
 package com.artfactory.project01.todayart.service;
 
 import com.artfactory.project01.todayart.controller.OrderController;
+import com.artfactory.project01.todayart.controller.ShippingController;
 import com.artfactory.project01.todayart.entity.Ordered;
 import com.artfactory.project01.todayart.entity.OrderedDetail;
 import com.artfactory.project01.todayart.entity.KakaoInfoRequest;
@@ -26,6 +27,8 @@ public class KakaoService {
     private KakaoInfoRequest kakaoInfoRequest;
     @Autowired
     OrderController orderController;
+    @Autowired
+    ShippingController shippingController;
 
 
     public ResponseEntity kakaoPayReady(Ordered ordered){
@@ -38,7 +41,7 @@ public class KakaoService {
         HttpEntity<MultiValueMap<String, String>> body = new HttpEntity<>(params, headers);
 
         try{
-            kakaoRequest = restTemplate.postForObject(new URI(HOST + "/v1/payment/ready"), body, KakaoRequest.class );
+            kakaoRequest = restTemplate.postForObject(new URI(HOST + "/v1/payment/ready"), body, KakaoRequest.class);
 
             log.info("KakaoPayReadyVO : "+kakaoRequest);
 

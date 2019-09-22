@@ -1,5 +1,6 @@
 package com.artfactory.project01.todayart.controller;
 
+import com.artfactory.project01.todayart.entity.File;
 import com.artfactory.project01.todayart.service.FileStorageService;
 import com.artfactory.project01.todayart.util.UploadFileResponse;
 import org.apache.catalina.core.ApplicationContext;
@@ -16,7 +17,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Arrays;
@@ -34,15 +34,15 @@ public class FileUploadController {
 
     @PostMapping(value = "/file", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file, HttpServletRequest request, Principal principal) {
-        String replaceFileName = fileStorageService.storeFile(file, request, principal);
+        File fileEntity = fileStorageService.storeFile(file, request, principal);
 
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/storage/files/")
-                .path(replaceFileName)
+                .path(fileEntity.getFileName())
                 .toUriString();
 
         // header에 accept : application/json 해줘야 함
-        return new UploadFileResponse(file.getOriginalFilename(), replaceFileName, fileDownloadUri, file.getContentType(), file.getSize());
+        return new UploadFileResponse(file.getOriginalFilename(), fileEntity.getFileName(), fileDownloadUri, file.getContentType(), file.getSize(), fileEntity.getFileId());
     }
 
     @PostMapping(value = "/files")

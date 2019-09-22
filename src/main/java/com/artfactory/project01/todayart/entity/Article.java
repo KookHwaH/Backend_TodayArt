@@ -26,7 +26,6 @@ public class Article implements Serializable {
     private Integer articleId;
 
 
-
     @Column(name = "board_id",nullable = false)
     private Integer boardId;
 

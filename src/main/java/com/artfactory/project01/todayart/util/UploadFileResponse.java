@@ -24,11 +24,17 @@ public class UploadFileResponse {
     @Setter
     private long size;
 
-    public UploadFileResponse(String originFileName, String replaceFileName, String fileDownloadUri, String fileType, long size) {
+
+    @Getter
+    @Setter
+    private Integer fileId;
+
+    public UploadFileResponse(String originFileName, String replaceFileName, String fileDownloadUri, String fileType, long size, Integer fileId) {
         this.originFileName = originFileName;
         this.replaceFileName = replaceFileName;
         this.fileDownloadUri = fileDownloadUri;
         this.fileType = fileType;
         this.size = size;
+        this.fileId = fileId;
     }
 }

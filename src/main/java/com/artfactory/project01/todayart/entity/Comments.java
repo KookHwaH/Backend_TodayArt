@@ -35,7 +35,7 @@ public class Comments implements Serializable {
     private Member member;
 
     @Column(name = "content", nullable = false, table = "comments")
-    private String content;
+    private String replyContent;
 
     @Column(name = "write_dated", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)

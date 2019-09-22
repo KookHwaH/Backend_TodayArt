@@ -1,5 +1,6 @@
 package com.artfactory.project01.todayart.repository;
 
+import com.artfactory.project01.todayart.entity.Artist;
 import com.artfactory.project01.todayart.entity.OrderedDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,4 +18,6 @@ public interface OrderedDetailRepository extends JpaRepository<OrderedDetail, In
 
 
     List<OrderedDetail> findAllByOrderIdAndStatus(int memberId, String status);
+
+    List<OrderedDetail> findAllByProduct_ArtistOrderByOrderIdDesc(Artist artist);
 }

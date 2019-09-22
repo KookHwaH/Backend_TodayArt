@@ -43,7 +43,7 @@ public class FileStorageService {
         }
     }
 
-    public String storeFile(MultipartFile file, HttpServletRequest request, Principal principal) {
+    public File storeFile(MultipartFile file, HttpServletRequest request, Principal principal) {
         // Normalize file name
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
@@ -73,14 +73,13 @@ public class FileStorageService {
             fileEntity.setFileUploadIp(request.getRemoteAddr());
 
             // 실제 운용 시 위 코드로 전환 (아래 10001은 테스트용)
-            // fileEntity.setMemberId(member.getMemberId());
-            fileEntity.setMemberId(10001);
+            fileEntity.setMemberId(member.getMemberId());
 
             fileEntity.setFileContentType(file.getContentType());
 
-            fileRepository.save(fileEntity);
+            return fileRepository.save(fileEntity);
 
-            return replaceFileName;
+
         } catch (IOException ex) {
             throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
         }

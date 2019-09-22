@@ -161,7 +161,7 @@ public class ProductController {
     */
     @PreAuthorize("hasAnyRole('ARTIST', 'ADMIN')")
     @RequestMapping(
-            path = "/artistid",
+            path = "/artistId",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE
     )
@@ -230,8 +230,11 @@ public class ProductController {
             method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE
     )
-    public void deleteProduct(@PathVariable("product_id") Integer product_id, @RequestBody ProductForm productForm) {
-        productService.deleteProduct(product_id, productForm);
+    public Product deleteProduct(@PathVariable("product_id") Integer product_id) {
+        productService.deleteProduct(product_id);
+        Product product = new Product();
+        product.setProductId(product_id);
+        return product;
     }
 
 

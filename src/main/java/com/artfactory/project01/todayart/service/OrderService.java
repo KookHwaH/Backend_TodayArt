@@ -4,11 +4,10 @@ import com.artfactory.project01.todayart.controller.PaymentController;
 import com.artfactory.project01.todayart.entity.*;
 import com.artfactory.project01.todayart.exception.VerificateFailException;
 import com.artfactory.project01.todayart.model.ChangeOrderDetail;
+import com.artfactory.project01.todayart.model.OrderForSeller;
 import com.artfactory.project01.todayart.model.OrderForm;
 import com.artfactory.project01.todayart.model.Period;
-import com.artfactory.project01.todayart.repository.CartRepository;
-import com.artfactory.project01.todayart.repository.OrderedDetailRepository;
-import com.artfactory.project01.todayart.repository.OrderedRepository;
+import com.artfactory.project01.todayart.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +28,10 @@ public class OrderService {
     CartRepository cartRepository;
     @Autowired
     PaymentController paymentController;
+    @Autowired
+    PaymentRepository paymentRepository;
+    @Autowired
+    ArtistRepository artistRepository;
 
 
     /**
@@ -294,6 +297,79 @@ public class OrderService {
         orderedRepository.save(ordered);
     }
 
+
+    /**
+     * author : 국화
+     *
+     * @param member : 접근하려는 유저객체
+     * @return
+     */
+    public ResponseEntity retreiveOrdersArtist(Member member){
+            Artist artist = artistRepository.findByMemberId(member.getMemberId());
+            return retreiveOrders(artist);
+    }
+
+    /**
+     * author : 국화
+     * 만약 artist 가 admin 처럼 접근했을 때 artist Id를 member 의 artistId 와 비교해서 서로 다르면 BadRequest 반환
+     * @param member
+     * @param artistId
+     * @return
+     */
+    public ResponseEntity retreiveOrdersArtist(Member member, int artistId){
+        Artist artist = artistRepository.findByMemberId(member.getMemberId());
+
+        if(artist.getArtistId()==artistId){
+            return retreiveOrders(artist);
+        }else{
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * author: 국화
+     * 관리자용...
+     * @param artistId
+     * @return
+     */
+    public ResponseEntity retreiveOrdersAdmin(int artistId){
+        Artist artist = artistRepository.findByMemberId(artistId);
+        return retreiveOrders(artist);
+    }
+
+    public ResponseEntity retreiveOrdersAdmin(){
+        List<OrderedDetail> orderDetails = orderedDetailRepository.findAll();
+        return retreiveOrders(orderDetails);
+    }
+
+
+    /**
+     * author: 국화
+     * @param artist : 찾고자하는 판매자 객체
+     * @return
+     */
+    public ResponseEntity retreiveOrders(Artist artist){
+        List<OrderedDetail> orderedDetails =orderedDetailRepository.findAllByProduct_ArtistOrderByOrderIdDesc(artist);
+        return retreiveOrders(orderedDetails);
+    }
+
+    public ResponseEntity retreiveOrders(List<OrderedDetail> orderedDetails){
+        List<OrderForSeller> orderForSellers = new ArrayList<>();
+        for(OrderedDetail item : orderedDetails){
+            OrderForSeller order = new OrderForSeller();
+            order.setOrderId(item.getOrderId());
+            order.setImage(item.getProduct().getThumbnail().getFileName());
+            order.setPaymentMethod(paymentRepository.findByOrderIdAndOrderedDetailId(item.getOrderId(), item.getOrderDetailId()).getPayMethod());
+            order.setOrderStatus(item.getStatus());
+            order.setDate(orderedRepository.findByOrderId(item.getOrderId()).getOrderDate());
+            order.setProductPrice(item.getTotalProductPrice());
+            order.setShippingFee(item.getShippingFee());
+            order.setTotalPrice(item.getTotalPrice());
+
+            orderForSellers.add(order);
+        }
+        return new ResponseEntity(orderForSellers, HttpStatus.OK);
+    }
 
 
 }

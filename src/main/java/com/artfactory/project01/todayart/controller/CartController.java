@@ -52,7 +52,7 @@ public class CartController {
     @RequestMapping(path="/{wishListId}",
             method = RequestMethod.POST,
             produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-    public Cart createWishToCart (@PathVariable Integer wishListId, Principal principal) {
+    public Cart createWishToCart (@PathVariable("wishListId") int wishListId, Principal principal) {
         member = getMember(principal);
         return cartService.createWishToCart(member, wishListId);
     }

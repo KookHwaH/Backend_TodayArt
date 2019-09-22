@@ -126,7 +126,7 @@ public class CommentForm implements Serializable {
             comments.setMemberId(this.memberId);
         }
         if (content != null) {
-            comments.setContent(this.content);
+            comments.setReplyContent(this.content);
         }
         if (createDated != null) {
             comments.setWriteDated(this.createDated);

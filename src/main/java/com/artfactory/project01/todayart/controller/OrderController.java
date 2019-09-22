@@ -19,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.xml.ws.Response;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -101,15 +102,23 @@ public class OrderController {
 
     /*
     작성자: 국화
-    판매자가 들어온 주문을 확인할 수 있다
+    판매자가 자신에게 들어온 주문을 확인할 수 있다
     @param Principal
     @return List<Ordered>
      */
     @PreAuthorize("hasAnyRole('ARTIST', 'ADMIN')")
-    @RequestMapping("/artist")
-    public List<Ordered> retrieveOrders(Principal principal){
+    @GetMapping("/artist")
+    public ResponseEntity retrieveOrders(@RequestParam(value="seller", required = false)Integer artistId, Principal principal){
         member = getMember(principal);
-        return null;
+        ResponseEntity result = artistId==null?
+                (member.getRole().equals("ROLE_ADMIN")?
+                        orderService.retreiveOrdersAdmin():
+                        orderService.retreiveOrdersArtist(member)):
+                (member.getRole().equals("ROLE_ADMIN")?
+                        orderService.retreiveOrdersAdmin(artistId):
+                        orderService.retreiveOrdersArtist(member, artistId));
+
+        return result;
     }
 
     /*

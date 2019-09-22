@@ -43,7 +43,7 @@ public class ProductForm implements Serializable {
     }
 
     public void setDelete(Product product) {
-        product.setIsDelete(this.isDelete);
+        product.setIsDelete("y");
         product.setDeleteDated(new Date());
         this.product = product;
     }

@@ -1,12 +1,17 @@
 package com.artfactory.project01.todayart.controller;
 
 import com.artfactory.project01.todayart.entity.Artist;
+import com.artfactory.project01.todayart.entity.Member;
 import com.artfactory.project01.todayart.repository.ArtistRepository;
 import com.artfactory.project01.todayart.service.ArtistService;
+import com.artfactory.project01.todayart.util.PrincipalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/artists")
@@ -17,6 +22,7 @@ public class ArtistController {
 
     @Autowired
     ArtistRepository artistRepository;
+
 
     /*
        작성자:  희창
@@ -41,5 +47,13 @@ public class ArtistController {
     @PatchMapping(path = "/{id}", produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public Artist updateArtist(@PathVariable("id") int id){
         return artistService.updateArtist(id);
+    }
+
+
+    @GetMapping(path="/info", produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public ResponseEntity retrieveArtistInfo(Principal principal){
+        Member member = (Member)PrincipalUtil.from(principal);
+        return artistService.retrieveArtistInfo(member);
+
     }
 }
